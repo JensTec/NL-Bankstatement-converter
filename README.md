@@ -6,7 +6,7 @@ The four banks/cards that are currently supported:
 * Rabobank - download transactions in `csv` file
 * ASN Bank - download transactions in `csv` file
 * ING Bank - download transactions in `csv` file
-* ANWB VISA ICS Credit Card - download transactions in monthly account statement `PDF`
+* ANWB VISA ICS Credit Card - download transactions in monthly account statement `pdf`
 
 ## Configuration
 

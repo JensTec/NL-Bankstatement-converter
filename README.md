@@ -11,3 +11,10 @@ The four banks/cards that are currently supported:
 ## Configuration
 
 Set your settings in the properties file, like path and name as it is shown on your ANWB Visa ICS Credit Card.
+
+## Usage
+
+1. Download the transactions from your bank (ING, ASN and RaboBank) or monthly account statement (ANWB VISA Card) to the folder you defined in the properties file.
+2. Launch the application and select the file you would like to convert. A summary will be given on the screen, and at the same time the 'csv' output file will be written to the same folder.
+3. Import your transactions into GNUCash by importing transactions in the CSV format.
+

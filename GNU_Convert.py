@@ -54,10 +54,12 @@ def menu():
         print("Goodbye!")
         raise SystemExit
     else:
-        filename = str(path + "/" + files[file_input])  # creating the variable which will be used in reading csv part
+        filename = str(path + "/" + files[file_input])  # creating the variable which will be used in reading the file
 
     if 'overzicht' in filename:
         visa()
+    elif 'Rekeningtransacties' in filename:
+        ob()
     else:  # reading csv selected file
         with open(filename, 'r', errors='ignore') as csvfile:  # errors='ignore' due to some characters in Rabobank
             csvreader = csv.reader(csvfile)  # creating a csv reader object
@@ -78,6 +80,67 @@ def menu():
             else:
                 print("This file is not supported.")
                 end()
+
+
+# ------------- convert data into the required output for Openbank --------
+def ob():
+    global rows
+    global bank
+    global filename
+    bank = "Openbank"  # set variable to Openbank
+    intermediate = []
+    metadate = []
+    i = 0  # counter for number of pages
+    j = 0  # counter for first rows to add to pagemetadate
+    k = 0  # counter to know which index the row has in rows
+
+    with pdfplumber.open(filename) as pdf:  # open PDF
+        pagemetadate = pdf.pages[0].extract_text()  # extract first page to extract meta data
+        for row in pagemetadate.splitlines():
+            metadate.append(row)  # add first 7 lines to metadate list
+            j += 1
+            if j == 7:
+                break
+
+        checklist = ('Rekeningafschrift', 'Datum ', 'Rekeningnummer', 'Omschrijving', 'Houder', 'Saldo', 'Transactie',
+                     'Pagina:')
+
+        for page in pdf.pages:
+            pageprint = pdf.pages[i].extract_text()  # extract text from all pages
+            for row in pageprint.splitlines():  # split each line into a row
+                if not row.startswith(checklist):  # drop all lines that start with words from the 'checklist'
+                    intermediate.append(row)  # add all rows to new list called 'intermediate'
+            i += 1  # increase counter for number of pages
+
+    for row in intermediate:  # this function cleans each row, and writes final data
+        rowsplit = row.split("  ")  # split row into separate columns
+        length = len(rowsplit)  # define length (# of columns) for each row
+        if length > 3:  # this tackles the issue that the description is split over two lines in the pdf
+            amount = rowsplit[3].replace(".", "")  # remove .
+            amount = amount.replace(",", ".")  # convert amount with comma to decimal point
+            amount = amount.replace("EUR", "")  # remove EUR
+            amount = amount.strip()  # remove all spaces
+            amount = float(amount)
+            if amount < 0:  # check if it should be in the column withdrawal or deposit
+                rowsplit.insert(0, amount * -1)  # insert amount in withdrawal column
+                rowsplit.insert(1, "")
+            else:
+                rowsplit.insert(0, "")
+                rowsplit.insert(1, amount)  # insert amount in deposit column
+            rowsplit.insert(7, rowsplit[2])  # insert date also at the end of the row
+            del rowsplit[2:4]  # delete dates at beginning of row
+            del rowsplit[4]  # delete extra date
+            rowsplit[3] = ""
+        else:
+            rows[(k-1)][2] = (str(rows[(k-1)][2]) + str(" ") + str(rowsplit[0]))  # takes the description from the last
+                                                                            # row and adds the next line to it
+            continue
+
+        k += 1
+        rows.append(rowsplit)
+        for x in rows:
+            x[2] = x[2].replace("REFERENTIE", "-")  # replace the recurring "REFERENTIE" with a simple "-"
+    filecreation()
 
 
 # ------------- convert data into the required output for RABOBANK --------
@@ -194,7 +257,7 @@ def visa():
             i += 1  # increase counter for number of pages
 
         try:
-            intermediate.index(card1)  # determine of card1 is present
+            intermediate.index(card1)  # determine if card1 is present
         except ValueError:
             card1status = 0     # variable that card is not present
             try:
@@ -237,7 +300,7 @@ def visa():
         rowsplit = row.split(" ")  # split row into separate columns
         length = len(rowsplit)  # define length for each row
 
-        if 'januari' in visa_file:  # this if corrects the yeaer in december when the statement arrives in January
+        if 'januari' in visa_file:  # this if corrects the year in December when the statement arrives in January
             if rowsplit[1] == 'dec':
                 newdate = str(rowsplit[0] + "-" + str(months.get(rowsplit[1])).zfill(2) + "-" + str(int(year) - 1))
             else:

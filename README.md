@@ -19,3 +19,10 @@ Set your settings in the properties file, like path and name as it is shown on y
 2. Launch the application and select the file you would like to convert. A summary will be given on the screen, and at the same time the `csv` output file will be written to the same folder.
 3. Import your transactions into GNUCash by importing transactions in the CSV format.
 
+### Extra tip
+
+Make this file executable under MacOS:
+
+* Change the extension of the file to .command
+* In Terminal make the Python script file executable by running ``chmod +x GNU_Convert.command``
+* Now you can double-click your Python script within MacOS and it will open a terminal window and run the script

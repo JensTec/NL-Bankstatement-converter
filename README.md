@@ -14,6 +14,8 @@ The five banks/cards that are currently supported:
 
 Set your settings in the properties file, like path and name as it is shown on your ANWB Visa ICS Credit Card. If you have Bunq accounts, put unique IBAN identifiers here as well.
 
+If you want the input files to be automatically deleted after the conversion process has finished, set `AUTO_DELETE` to `YES`.
+
 ## Usage
 
 1. Download the transactions from your bank (ING, ASN, Openbank, Bunq and RaboBank) or monthly account statement (ANWB VISA Card) to the folder you defined in the properties file.
@@ -29,4 +31,4 @@ Make this file executable under MacOS:
 * Now you can double-click your Python script within MacOS and it will open a terminal window and run the script
 
 Inspiration to solve the Openbank [pdfplumber](https://pypi.org/project/pdfplumber/#extracting-tables) challenge: 
-[jsvine](https://github.com/jsvine/pdfplumber/blob/stable/examples/notebooks/extract-table-nics.ipynb)
+[jsvine](https://github.com/jsvine/pdfplumber/blob/stable/examples/notebooks/extract-table-nics.ipynb).

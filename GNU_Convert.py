@@ -375,6 +375,7 @@ def filecreation():
     global csvfile
     global filename
     global bank
+    auto_delete = configs.get("AUTO_DELETE").data  # auto delete input file , yes or no?
     a = datetime.now()  # unique timestamp
     filename_write = str(path + "/" + bank + visa_file + " - GNUCash import " +
                          str(a.year) + str(a.month).zfill(2) + str(a.day).zfill(2) + "_" + str(a.hour).zfill(2) +
@@ -392,9 +393,10 @@ def filecreation():
     print('\n')
     print(tabulate(rows, headers=fields_output))  # printing the table on screen with the data
 
-    # os.remove(filename)
-    print("")
-    print("File %s has been removed successfully." % filename)
+    if auto_delete == "YES":
+        os.remove(filename)
+        print("")
+        print("File %s has been removed successfully." % filename)
     end()
 
 
@@ -403,18 +405,17 @@ def end():
     global rows
     global visa_file
     print("")
-    end_input = str(input("Would you like to exit (y/n)? "))
-    if end_input == "n":  # create option to exit the software gracefully
+    end_input = str(input("Would you like to exit (y/n)? "))  # create option to exit the software gracefully
+    if end_input == "n":
         rows = []           # reset rows list to initial state
         visa_file = ""      # reset visa file addition to initial state
         menu()
     else:
         print("")
-        print("Goodbye!")
         raise SystemExit
 
 
 # ------------ start menu ---------------------------
 print("")
-print("Welcome to the GNU-Cash bank files converter - made by JensTec (version 1.2)")
+print("Welcome to the GNU-Cash bank files converter - made by JensTec (version 1.21)")
 menu()

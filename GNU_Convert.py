@@ -72,6 +72,11 @@ def menu():
                 for row in csvreader:  # extracting each data row one by one
                     rows.append(row)
                 asn()
+            elif 'bunq' in filename:
+                fields = next(csvreader)  # extracting field names through first row
+                for row in csvreader:  # extracting each data row one by one
+                    rows.append(row)
+                bunq()
             elif 'NL15INGB' in filename:
                 fields = next(csvreader)  # extracting field names through first row
                 for row in csvreader:  # extracting each data row one by one
@@ -88,58 +93,39 @@ def ob():
     global bank
     global filename
     bank = "Openbank"  # set variable to Openbank
-    intermediate = []
-    metadate = []
+    customlines = {27, 77, 152, 384, 413, 458}  # used by table settings to demark vertical lines of cells
+    table_settings = {  # used by pdfplumber to correctly extract the table from the pdf
+        "explicit_vertical_lines": customlines,
+        "horizontal_strategy": "lines"
+    }
+
     i = 0  # counter for number of pages
-    j = 0  # counter for first rows to add to pagemetadate
-    k = 0  # counter to know which index the row has in rows
-
     with pdfplumber.open(filename) as pdf:  # open PDF
-        pagemetadate = pdf.pages[0].extract_text()  # extract first page to extract meta data
-        for row in pagemetadate.splitlines():
-            metadate.append(row)  # add first 7 lines to metadate list
-            j += 1
-            if j == 7:
-                break
-
-        checklist = ('Rekeningafschrift', 'Datum ', 'Rekeningnummer', 'Omschrijving', 'Houder', 'Saldo', 'Transactie',
-                     'Pagina:')
-
         for page in pdf.pages:
-            pageprint = pdf.pages[i].extract_text()  # extract text from all pages
-            for row in pageprint.splitlines():  # split each line into a row
-                if not row.startswith(checklist):  # drop all lines that start with words from the 'checklist'
-                    intermediate.append(row)  # add all rows to new list called 'intermediate'
+            allpages = pdf.pages[i].extract_table(table_settings)  # extract table from all pages
+            for row in allpages[2:]:
+                if not row[0] == '':
+                    amount = row[4].replace(".", "")  # remove .
+                    amount = amount.replace(",", ".")  # convert amount with comma to decimal point
+                    amount = amount.strip()  # remove all spaces
+                    amount = float(amount)  # convert string to float
+                    if amount < 0:  # check if it should be in the column withdrawal or deposit
+                        row.insert(0, amount * -1)  # insert amount in withdrawal column
+                        row.insert(1, "")
+                    else:
+                        row.insert(0, "")
+                        row.insert(1, amount)  # insert amount in deposit column
+                    row.insert(6, row[2])
+                    del row[2:4]  # delete dates at beginning of row
+                    del row[3]
+                    del row[4]
+                    row.insert(3, "")
+                    descr = str(row[2]).replace("\n", "")
+                    descr = descr.replace("REFERENTIE", " -")  # replace the recurring "REFERENTIE" with a simple "-"
+                    row[2] = descr
+                    rows.append(row)
+                continue
             i += 1  # increase counter for number of pages
-
-    for row in intermediate:  # this function cleans each row, and writes final data
-        rowsplit = row.split("  ")  # split row into separate columns
-        length = len(rowsplit)  # define length (# of columns) for each row
-        if length > 3:  # this tackles the issue that the description is split over two lines in the pdf
-            amount = rowsplit[3].replace(".", "")  # remove .
-            amount = amount.replace(",", ".")  # convert amount with comma to decimal point
-            amount = amount.replace("EUR", "")  # remove EUR
-            amount = amount.strip()  # remove all spaces
-            amount = float(amount)
-            if amount < 0:  # check if it should be in the column withdrawal or deposit
-                rowsplit.insert(0, amount * -1)  # insert amount in withdrawal column
-                rowsplit.insert(1, "")
-            else:
-                rowsplit.insert(0, "")
-                rowsplit.insert(1, amount)  # insert amount in deposit column
-            rowsplit.insert(7, rowsplit[2])  # insert date also at the end of the row
-            del rowsplit[2:4]  # delete dates at beginning of row
-            del rowsplit[4]  # delete extra date
-            rowsplit[3] = ""
-        else:
-            rows[(k-1)][2] = (str(rows[(k-1)][2]) + str(" ") + str(rowsplit[0]))  # takes the description from the last
-                                                                            # row and adds the next line to it
-            continue
-
-        k += 1
-        rows.append(rowsplit)
-        for x in rows:
-            x[2] = x[2].replace("REFERENTIE", "-")  # replace the recurring "REFERENTIE" with a simple "-"
     filecreation()
 
 
@@ -163,6 +149,47 @@ def rabo():
         row.insert(3, volgnummer)  # inserting volgnummer
         del row[4:8]  # delete columns not needed
         del row[5:26]  # delete columns not needed
+    filecreation()
+
+
+# ------------- convert data into the required output for Bunq Bank --------
+def bunq():
+    global rows
+    global bank
+    account1 = configs.get("BUNQ_ACCOUNT1").data  # unique identifier to distinguish between different bunq accounts
+    account2 = configs.get("BUNQ_ACCOUNT2").data
+
+    if account1 in rows[0][3]:
+        bank = "Bunq Joint Account"  # you can insert any name here
+    elif account2 in rows[0][3]:
+        bank = "Bunq ES Deduction Account"  # you can insert any name here
+    else:
+        bank = "Bunq unkown"
+
+    for row in rows:
+        var1 = row[2].replace(".", "")
+        var2 = var1.split(",")  # split amount into two strings
+        amount = float(str(var2[0] + "." + var2[1]))  # make it a float
+        if amount < 0:  # check if it should be in the column withdrawal or deposit
+            row.insert(0, -1 * amount)  # multiplying by -1 to have the amount with 'minus' sign
+            row.insert(1, "")
+        else:
+            row.insert(0, "")
+            row.insert(1, amount)
+
+        if row[6] == "":  # only show this string if it is not empty
+            one = ""
+        else:
+            one = str(row[6] + " - ")
+        if row[7] in row[8]:  # prevent information showing twice
+            two = str(row[8])
+        else:
+            two = str(row[7] + " - " + row[8])
+        row.insert(2, (one + two))  # inserting description
+        row.insert(3, "")  # inserting empty volgnummer
+        row.insert(4, row[5])
+        del row[5:14]  # delete columns not needed
+
     filecreation()
 
 
@@ -365,7 +392,7 @@ def filecreation():
     print('\n')
     print(tabulate(rows, headers=fields_output))  # printing the table on screen with the data
 
-    os.remove(filename)
+    # os.remove(filename)
     print("")
     print("File %s has been removed successfully." % filename)
     end()

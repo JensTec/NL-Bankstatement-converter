@@ -14,7 +14,7 @@ The five banks/cards that are currently supported:
 
 Set your settings in the properties file, like path and name as it is shown on your ANWB Visa ICS Credit Card. If you have Bunq accounts, put unique IBAN identifiers here as well.
 
-If you want the input files to be automatically deleted after the conversion process has finished, set `AUTO_DELETE` to `YES`.
+If you want the input files to be automatically deleted after the conversion process has finalized, set `AUTO_DELETE` to `YES`.
 
 ## Usage
 

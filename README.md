@@ -28,5 +28,5 @@ Make this file executable under MacOS:
 * In Terminal make the Python script file executable by running ``chmod +x GNU_Convert.command``
 * Now you can double-click your Python script within MacOS and it will open a terminal window and run the script
 
-Inspiration to solve the Openbank pdf plumber challenge: 
+Inspiration to solve the Openbank [pdfplumber](https://pypi.org/project/pdfplumber/#extracting-tables) challenge: 
 [jsvine](https://github.com/jsvine/pdfplumber/blob/stable/examples/notebooks/extract-table-nics.ipynb)

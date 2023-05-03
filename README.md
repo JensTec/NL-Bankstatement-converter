@@ -32,3 +32,5 @@ Make this file executable under MacOS:
 
 Inspiration to solve the Openbank [pdfplumber](https://pypi.org/project/pdfplumber/#extracting-tables) challenge: 
 [jsvine](https://github.com/jsvine/pdfplumber/blob/stable/examples/notebooks/extract-table-nics.ipynb).
+
+If you would like me to add your bank statement format as well, just give me a shout.

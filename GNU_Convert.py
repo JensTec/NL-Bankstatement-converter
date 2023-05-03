@@ -51,7 +51,6 @@ def menu():
 
     if (file_input + 1) == exit_number:  # create option to exit the software gracefully
         print("")
-        print("Goodbye!")
         raise SystemExit
     else:
         filename = str(path + "/" + files[file_input])  # creating the variable which will be used in reading the file
@@ -77,7 +76,7 @@ def menu():
                 for row in csvreader:  # extracting each data row one by one
                     rows.append(row)
                 bunq()
-            elif 'NL15INGB' in filename:
+            elif 'INGB' in filename:
                 fields = next(csvreader)  # extracting field names through first row
                 for row in csvreader:  # extracting each data row one by one
                     rows.append(row)

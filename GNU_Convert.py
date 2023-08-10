@@ -157,13 +157,16 @@ def bunq():
     global bank
     account1 = configs.get("BUNQ_ACCOUNT1").data  # unique identifier to distinguish between different bunq accounts
     account2 = configs.get("BUNQ_ACCOUNT2").data
+    account3 = configs.get("BUNQ_ACCOUNT3").data
 
     if account1 in rows[0][3]:
         bank = "Bunq Joint Account"  # you can insert any name here
     elif account2 in rows[0][3]:
         bank = "Bunq ES Deduction Account"  # you can insert any name here
+    elif account3 in rows[0][3]:
+        bank = "Bunq Savings Account"  # you can insert any name here
     else:
-        bank = "Bunq unkown"
+        bank = "Bunq unknown"
 
     for row in rows:
         var1 = row[2].replace(".", "")
@@ -186,7 +189,7 @@ def bunq():
             two = str(row[7] + " - " + row[8])
         row.insert(2, (one + two))  # inserting description
         row.insert(3, "")  # inserting empty volgnummer
-        row.insert(4, row[5])
+        row.insert(4, row[4])  # inserting date
         del row[5:14]  # delete columns not needed
 
     filecreation()

@@ -92,17 +92,20 @@ def ob():
     global bank
     global filename
     bank = "Openbank"  # set variable to Openbank
-    customlines = {27, 77, 152, 384, 413, 458}  # used by table settings to demark vertical lines of cells
+    # customlines = {27, 77, 152, 384, 413, 458}  # table_settings to demark vertical lines of cells (old PDF format OB)
+    customlines = {52, 102, 177, 405, 426, 477}  # new version to demark vertical lines after change (?) of OB format
     table_settings = {  # used by pdfplumber to correctly extract the table from the pdf
         "explicit_vertical_lines": customlines,
         "horizontal_strategy": "lines"
     }
 
     i = 0  # counter for number of pages
+
     with pdfplumber.open(filename) as pdf:  # open PDF
         for page in pdf.pages:
             allpages = pdf.pages[i].extract_table(table_settings)  # extract table from all pages
-            for row in allpages[2:]:
+
+            for row in allpages[2:-1]:  # -1 due to additional line to PDF (last line with text)
                 if not row[0] == '':
                     amount = row[4].replace(".", "")  # remove .
                     amount = amount.replace(",", ".")  # convert amount with comma to decimal point
@@ -419,5 +422,5 @@ def end():
 
 # ------------ start menu ---------------------------
 print("")
-print("Welcome to the GNU-Cash bank files converter - made by JensTec (version 1.21)")
+print("GNU-Cash bank files converter - written by JensTec (version 1.22)")
 menu()

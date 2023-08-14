@@ -34,3 +34,5 @@ Inspiration to solve the Openbank [pdfplumber](https://pypi.org/project/pdfplumb
 [jsvine](https://github.com/jsvine/pdfplumber/blob/stable/examples/notebooks/extract-table-nics.ipynb).
 
 If you would like me to add your bank statement format as well, just give me a shout.
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X1O747G)

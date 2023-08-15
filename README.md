@@ -1,10 +1,10 @@
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/JensTec/NL-Bankstatement-converter/)
-[![nl](https://img.shields.io/badge/lang-nl-yellow.svg)](https://github.com/JensTec/NL-Bankstatement-converter/README.nl.md)
+[![nl](https://img.shields.io/badge/lang-nl-yellow.svg)](https://github.com/JensTec/NL-Bankstatement-converter/blob/main/README.nl.md)
 ***
 
 # NL-Bankstatement-converter
 
-NL Bankstatement converter is a small application to convert `csv` and `pdf` files from five 'Dutch' banks and one credit card provider into a `csv` format that can be easily imported into [GNUCash](https://github.com/Gnucash/gnucash).
+NL Bankstatement converter is a small application to convert `csv` and `pdf` files from five Dutch banks and one credit card provider into a `csv` format that can be easily imported into [GNUCash](https://github.com/Gnucash/gnucash).
 
 The six banks/cards that are currently supported:
 * Rabobank - download transactions in `csv` file

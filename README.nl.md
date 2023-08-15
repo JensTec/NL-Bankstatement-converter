@@ -37,6 +37,6 @@ Maak uw Python applicatie uitvoerbaar onder MacOS:
 
 Inspiratie om de Openbank [pdfplumber](https://pypi.org/project/pdfplumber/#extracting-tables) challenge op te lossen: [jsvine](https://github.com/jsvine/pdfplumber/blob/stable/examples/notebooks/extract-table-nics.ipynb).
 
-Als u wilt dat ik ook uw bankafschriftformaat toevoeg, stuur me een berichtje.
+Als u wilt dat ik ook uw bankafschriftformaat toevoeg, stuur me simpelweg een berichtje.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X1O747G)

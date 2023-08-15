@@ -1,5 +1,7 @@
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/JensTec/NL-Bankstatement-converter/README.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/JensTec/NL-Bankstatement-converter)
 [![nl](https://img.shields.io/badge/lang-nl-yellow.svg)](https://github.com/JensTec/NL-Bankstatement-converter/README.nl.md)
+
+***
 
 # NL-Bankstatement-converter
 
@@ -30,12 +32,12 @@ Importeer uw transacties in GNUCash door transacties in de `csv` indeling te imp
 
 Maak uw Python applicatie uitvoerbaar onder MacOS:
 
-De extensie van het bestand wijzigen in .command
-Maak in Terminal het Python-scriptbestand uitvoerbaar door chmod +x GNU_Convert.command uit te voeren
-Nu kunt u dubbelklikken op uw Python-script in MacOS en het opent een terminalvenster en voert het script uit
+- Wijzig de extensie van het bestand in `.command`
+- Maak in Terminal het Python-scriptbestand uitvoerbaar door `chmod +x GNU_Convert.command` uit te voeren
+- Nu kunt u dubbelklikken op uw Python applicatie in MacOS en het opent in een terminalvenster
 
-Inspiratie om de Openbank pdfplumber challenge op te lossen: jsvine.
+Inspiratie om de Openbank [pdfplumber](https://pypi.org/project/pdfplumber/#extracting-tables) challenge op te lossen: [jsvine](https://github.com/jsvine/pdfplumber/blob/stable/examples/notebooks/extract-table-nics.ipynb).
 
-Als je wilt dat ik ook je bankafschriftformaat toevoeg, geef me dan gewoon een seintje.
+Als u wilt dat ik ook uw bankafschriftformaat toevoeg, stuur me een berichtje.
 
-Ko-fi
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X1O747G)

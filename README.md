@@ -1,3 +1,7 @@
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/JensTec/NL-Bankstatement-converter/)
+[![nl](https://img.shields.io/badge/lang-nl-yellow.svg)](https://github.com/JensTec/NL-Bankstatement-converter/README.nl.md)
+***
+
 # NL-Bankstatement-converter
 
 NL Bankstatement converter is a small application to convert `csv` and `pdf` files from five 'Dutch' banks and one credit card provider into a `csv` format that can be easily imported into [GNUCash](https://github.com/Gnucash/gnucash).
@@ -28,7 +32,7 @@ Make this file executable under MacOS:
 
 * Change the extension of the file to .command
 * In Terminal make the Python script file executable by running ``chmod +x GNU_Convert.command``
-* Now you can double-click your Python script within MacOS and it will open a terminal window and run the script
+* Now you can double-click your Python script within MacOS and it will open a terminal window
 
 Inspiration to solve the Openbank [pdfplumber](https://pypi.org/project/pdfplumber/#extracting-tables) challenge: 
 [jsvine](https://github.com/jsvine/pdfplumber/blob/stable/examples/notebooks/extract-table-nics.ipynb).

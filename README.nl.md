@@ -18,7 +18,7 @@ De zes banken/kaarten die momenteel worden ondersteund:
 
 Stel uw instellingen in het `properties` bestand, zoals de directory en uw naam zoals deze wordt weergegeven op uw ANWB Visa ICS-creditcard. Als u Bunq-accounts heeft, plaats dan hier ook uw unieke IBAN-id's.
 
-Als u wilt dat de invoerbestanden automatisch worden verwijderd nadat het conversieproces is voltooid, dan stelt u `AUTO_DELETE` in op `YES`.
+Als u wilt dat de invoerbestanden automatisch worden verwijderd nadat het conversieproces is voltooid, dan stelt u `AUTO_DELETE` in op `YES`. Als deze setting op `NO` staat, dan wordt het invoerbestand automatisch gearchiveerd in de directory `/Archive'.
 
 ## Gebruik
 

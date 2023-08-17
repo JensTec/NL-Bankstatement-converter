@@ -7,6 +7,7 @@ from datetime import datetime
 from tabulate import tabulate
 import pdfplumber
 from jproperties import Properties
+import shutil
 
 
 # ------------ define global variables ---------------------------
@@ -17,6 +18,7 @@ with open('GNU_user_data.properties', 'rb') as config_file:  # load the properti
     configs.load(config_file)
 
 path = configs.get("FILE_PATH").data  # path where the csv files are saved
+archivepath = str(path + "/Archive")
 csvfile = ""
 filename = ""
 bank = ""
@@ -104,8 +106,7 @@ def ob():
     with pdfplumber.open(filename) as pdf:  # open PDF
         for page in pdf.pages:
             allpages = pdf.pages[i].extract_table(table_settings)  # extract table from all pages
-
-            for row in allpages[2:-1]:  # -1 due to additional line to PDF (last line with text)
+            for row in allpages[:-1]:  # -1 due to additional line to PDF (last line with text)
                 if not row[0] == '':
                     amount = row[4].replace(".", "")  # remove .
                     amount = amount.replace(",", ".")  # convert amount with comma to decimal point
@@ -394,7 +395,7 @@ def filecreation():
         csvwriter.writerows(rows)  # writing the data rows
 
     print('\n')
-    print(filename)
+    print("You have selected the file: '" + filename[len(path) + 1:] + "' from %s." % bank)
     print('\n')
     print(tabulate(rows, headers=fields_output))  # printing the table on screen with the data
 
@@ -402,6 +403,14 @@ def filecreation():
         os.remove(filename)
         print("")
         print("File %s has been removed successfully." % filename)
+    else:  # if auto_delete is set to "NO", the input file will be archived in a separate folder
+        if not os.path.exists(archivepath):  # check if the archivepath folder already exists
+            os.mkdir(archivepath)
+            print('\n')
+            print("Folder '%s' has been created." % archivepath)
+        shutil.move(filename, archivepath)  # move inputfile to 'archivepath'
+        print('\n')
+        print("The input file has been moved to %s." % archivepath)
     end()
 
 
@@ -422,5 +431,5 @@ def end():
 
 # ------------ start menu ---------------------------
 print("")
-print("GNU-Cash bank files converter - written by JensTec (version 1.22)")
+print("GNU-Cash bank files converter - written by JensTec (version 1.3)")
 menu()

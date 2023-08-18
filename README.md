@@ -4,7 +4,7 @@
 
 # NL-Bankstatement-converter
 
-NL Bankstatement converter is a small application to convert `csv` and `pdf` files from five Dutch banks and one credit card provider into a `csv` format that can be easily imported into [GNUCash](https://github.com/Gnucash/gnucash).
+NL Bankstatement converter is a small application to convert `csv` and `pdf` files from five Dutch banks and one credit card provider into a `csv` format that can be easily imported into [GnuCash](https://github.com/Gnucash/gnucash).
 
 The six banks/cards that are currently supported:
 * Rabobank - download transactions in `csv` file
@@ -25,7 +25,7 @@ If you want the input files to be automatically deleted after the conversion pro
 
 1. Download the transactions from your bank (ING, ASN, Openbank, Bunq and RaboBank) or monthly account statement (ANWB VISA Card) to the folder you defined in the properties file.
 2. Launch the application and select the file you would like to convert. A summary will be given on the screen, and at the same time the `csv` output file will be written to the same folder.
-3. Import your transactions into GNUCash by importing transactions in the CSV format.
+3. Import your transactions into GnuCash by importing transactions in the CSV format.
 
 ### Extra tip
 

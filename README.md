@@ -32,7 +32,7 @@ If you want the input files to be automatically deleted after the conversion pro
 Make this file executable under MacOS:
 
 * Change the extension of the file to .command
-* In Terminal make the Python script file executable by running ``chmod +x GNU_Convert.command``
+* In Terminal make the Python script file executable by running ``chmod +x Statement_Converter.command``
 * Now you can double-click your Python script within MacOS and it will open a terminal window
 
 Inspiration to solve the Openbank [pdfplumber](https://pypi.org/project/pdfplumber/#extracting-tables) challenge: 

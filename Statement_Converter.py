@@ -416,6 +416,7 @@ def filecreation():
             print("Folder '%s' has been created." % archivepath)
         shutil.move(filename, archivepath)  # move inputfile to 'archivepath'
         print("The input file has been moved to %s." % archivepath)
+    print("----------------------------------------------------------------------")
 
     # reset values and return to menu()
     rows = []  # reset rows list

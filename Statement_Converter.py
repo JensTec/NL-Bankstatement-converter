@@ -13,16 +13,23 @@ import shutil
 # ------------ define global variables ---------------------------
 fields = []                             # create list with original headers
 rows = []                               # create list with all rows
-configs = Properties()                  # instantiate the Properties object
-with open('GNU_user_data.properties', 'rb') as config_file:  # load the properties file into the Properties object
-    configs.load(config_file)
-
-path = configs.get("FILE_PATH").data  # path where the csv files are saved
-archivepath = str(path + "/Archive")
 csvfile = ""
 filename = ""
 bank = ""
 visa_file = ""
+
+# reading the properties from the properties file
+configs = Properties()                  # instantiate the Properties object
+with open('SC_user_dataSJ.properties', 'rb') as config_file:  # load the properties file into the Properties object
+    configs.load(config_file)
+
+path = configs.get("FILE_PATH").data  # path where the csv files are saved
+archivepath = str(path + "/Archive")  # creates name and directory for archiving files
+bunq_acc = [  # creating list with unique identifiers to distinguish between bunq accounts
+    configs.get("BUNQ_ACCOUNT1").data,
+    configs.get("BUNQ_ACCOUNT2").data,
+    configs.get("BUNQ_ACCOUNT3").data
+]
 
 
 # ------------ menu function ---------------------------
@@ -32,11 +39,12 @@ def menu():
     global rows
     global csvfile
     global filename
+    global bunq_acc
     files = []  # create list with all the csv file names
     filenumber = 1
 
     print("")
-    print("Available .csv & .pdf files : ")
+    print("Available .csv & .pdf files in %s: " % path)
     for x in os.listdir(path):  # show available csv and pdf files in path, and ability to select the correct one
         if x.endswith(".csv") or x.endswith(".pdf"):
             files.append(x)
@@ -73,7 +81,7 @@ def menu():
                 for row in csvreader:  # extracting each data row one by one
                     rows.append(row)
                 asn()
-            elif 'bunq' in filename:
+            elif bunq_acc[0] or bunq_acc[1] or bunq_acc[2] in filename:  #
                 fields = next(csvreader)  # extracting field names through first row
                 for row in csvreader:  # extracting each data row one by one
                     rows.append(row)
@@ -85,7 +93,7 @@ def menu():
                 ing()
             else:
                 print("This file is not supported.")
-                end()
+                menu()
 
 
 # ------------- convert data into the required output for Openbank --------
@@ -159,15 +167,13 @@ def rabo():
 def bunq():
     global rows
     global bank
-    account1 = configs.get("BUNQ_ACCOUNT1").data  # unique identifier to distinguish between different bunq accounts
-    account2 = configs.get("BUNQ_ACCOUNT2").data
-    account3 = configs.get("BUNQ_ACCOUNT3").data
+    global bunq_acc
 
-    if account1 in rows[0][3]:
+    if bunq_acc[0] in rows[0][3]:
         bank = "Bunq Joint Account"  # you can insert any name here
-    elif account2 in rows[0][3]:
+    elif bunq_acc[1] in rows[0][3]:
         bank = "Bunq ES Deduction Account"  # you can insert any name here
-    elif account3 in rows[0][3]:
+    elif bunq_acc[2] in rows[0][3]:
         bank = "Bunq Savings Account"  # you can insert any name here
     else:
         bank = "Bunq unknown"
@@ -245,7 +251,7 @@ def asn():
     filecreation()
 
 
-# ------------- convert data into the required output for ASN Bank --------
+# ------------- convert data into the required output for ANWB Visa Credit Card --------
 def visa():
     global bank
     global rows
@@ -333,11 +339,9 @@ def visa():
         rowsplit = row.split(" ")  # split row into separate columns
         length = len(rowsplit)  # define length for each row
 
-        if 'januari' in visa_file:  # this if corrects the year in December when the statement arrives in January
-            if rowsplit[1] == 'dec':
-                newdate = str(rowsplit[0] + "-" + str(months.get(rowsplit[1])).zfill(2) + "-" + str(int(year) - 1))
-            else:
-                newdate = str(rowsplit[0] + "-" + str(months.get(rowsplit[1])).zfill(2) + "-" + year)
+        if 'januari' in visa_file and rowsplit[1] == 'dec':  # this corrects the year in December when the statement
+                                                                                                # arrives in January
+            newdate = str(rowsplit[0] + "-" + str(months.get(rowsplit[1])).zfill(2) + "-" + str(int(year) - 1))
         else:
             newdate = str(rowsplit[0] + "-" + str(months.get(rowsplit[1])).zfill(2) + "-" + year)  # lookup month and
                                                                                                 # convert to date
@@ -381,9 +385,12 @@ def filecreation():
     global csvfile
     global filename
     global bank
+    global rows
+    global visa_file
+
     auto_delete = configs.get("AUTO_DELETE").data  # auto delete input file , yes or no?
     a = datetime.now()  # unique timestamp
-    filename_write = str(path + "/" + bank + visa_file + " - GNUCash import " +
+    filename_write = str(path + "/" + bank + visa_file + " - GnuCash import " +
                          str(a.year) + str(a.month).zfill(2) + str(a.day).zfill(2) + "_" + str(a.hour).zfill(2) +
                          str(a.minute).zfill(2) + ".csv")
 
@@ -394,8 +401,7 @@ def filecreation():
         csvwriter.writerow(fields_output)  # writing the fields
         csvwriter.writerows(rows)  # writing the data rows
 
-    print('\n')
-    print("You have selected the file: '" + filename[len(path) + 1:] + "' from %s." % bank)
+    print("You have converted the file: '" + filename[len(path) + 1:] + "' from %s." % bank)
     print('\n')
     print(tabulate(rows, headers=fields_output))  # printing the table on screen with the data
 
@@ -409,27 +415,15 @@ def filecreation():
             print('\n')
             print("Folder '%s' has been created." % archivepath)
         shutil.move(filename, archivepath)  # move inputfile to 'archivepath'
-        print('\n')
         print("The input file has been moved to %s." % archivepath)
-    end()
 
-
-# ------------ exit function  ---------------------------
-def end():
-    global rows
-    global visa_file
-    print("")
-    end_input = str(input("Would you like to exit (y/n)? "))  # create option to exit the software gracefully
-    if end_input == "n":
-        rows = []           # reset rows list to initial state
-        visa_file = ""      # reset visa file addition to initial state
-        menu()
-    else:
-        print("")
-        raise SystemExit
+    # reset values and return to menu()
+    rows = []  # reset rows list
+    visa_file = ""  # reset visa file addition
+    menu()
 
 
 # ------------ start menu ---------------------------
 print("")
-print("GNU-Cash bank files converter - written by JensTec (version 1.3)")
+print("NL-Bankstatement-converter for GnuCash - written by JensTec (version 1.31)")
 menu()

@@ -32,7 +32,7 @@ Importeer uw transacties in GnuCash door transacties in de `csv` indeling te imp
 Maak uw Python applicatie uitvoerbaar onder MacOS:
 
 - Wijzig de extensie van het bestand in `.command`
-- Maak in Terminal het Python-scriptbestand uitvoerbaar door `chmod +x GNU_Convert.command` uit te voeren
+- Maak in Terminal het Python-scriptbestand uitvoerbaar door `chmod +x Statement_Converter.command` uit te voeren
 - Nu kunt u dubbelklikken op uw Python applicatie in MacOS en het opent in een terminalvenster
 
 Inspiratie om de Openbank [pdfplumber](https://pypi.org/project/pdfplumber/#extracting-tables) challenge op te lossen: [jsvine](https://github.com/jsvine/pdfplumber/blob/stable/examples/notebooks/extract-table-nics.ipynb).

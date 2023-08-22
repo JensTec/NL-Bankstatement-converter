@@ -20,7 +20,7 @@ visa_file = ""
 
 # reading the properties from the properties file
 configs = Properties()                  # instantiate the Properties object
-with open('SC_user_dataSJ.properties', 'rb') as config_file:  # load the properties file into the Properties object
+with open('SC_user_data.properties', 'rb') as config_file:  # load the properties file into the Properties object
     configs.load(config_file)
 
 path = configs.get("FILE_PATH").data  # path where the csv files are saved

@@ -38,8 +38,8 @@ Make this file executable under MacOS:
 Inspiration to solve the Openbank [pdfplumber](https://pypi.org/project/pdfplumber/#extracting-tables) challenge: 
 [jsvine](https://github.com/jsvine/pdfplumber/blob/stable/examples/notebooks/extract-table-nics.ipynb).
 
-<a rel="me" href="https://toot.community/@sietse"></a>
-
 If you would like me to add your bank statement format as well, just give me a shout.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X1O747G)
+
+<a rel="me" href="https://toot.community/@sietse">Mastodon</a>

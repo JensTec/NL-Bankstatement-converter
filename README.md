@@ -42,4 +42,4 @@ If you would like me to add your bank statement format as well, just give me a s
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X1O747G)
 
-<a rel="me" href="https://toot.community/@sietse">Mastodon</a>
+

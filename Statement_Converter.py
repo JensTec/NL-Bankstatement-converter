@@ -9,17 +9,16 @@ import pdfplumber
 from jproperties import Properties
 import shutil
 
-
 # ------------ define global variables ---------------------------
-fields = []                             # create list with original headers
-rows = []                               # create list with all rows
+fields = []  # create list with original headers
+rows = []  # create list with all rows
 csvfile = ""
 filename = ""
 bank = ""
 visa_file = ""
 
 # reading the properties from the properties file
-configs = Properties()                  # instantiate the Properties object
+configs = Properties()  # instantiate the Properties object
 with open('SC_user_data.properties', 'rb') as config_file:  # load the properties file into the Properties object
     configs.load(config_file)
 
@@ -69,6 +68,8 @@ def menu():
         visa()
     elif 'Rekeningtransacties' in filename:
         ob()
+    elif 'Brubank' in filename:
+        brubank()
     else:  # reading csv selected file
         with open(filename, 'r', errors='ignore') as csvfile:  # errors='ignore' due to some characters in Rabobank
             csvreader = csv.reader(csvfile)  # creating a csv reader object
@@ -94,6 +95,42 @@ def menu():
             else:
                 print("This file is not supported.")
                 menu()
+
+
+# ------------- convert data into the required output for Brubank - Argentina --------
+def brubank():
+    global rows
+    global bank
+    global filename
+    bank = "Brubank"  # set variable to Brubank
+    customlines = {29, 62, 70, 122, 135, 380, 430, 443, 510, 565}  # demark vertical lines
+    table_settings = {  # used by pdfplumber to correctly extract the table from the pdf
+        "explicit_vertical_lines": customlines,
+        "horizontal_strategy": "text",
+        "snap_y_tolerance": 5,
+        "intersection_x_tolerance": 15,
+    }
+
+    i = 0  # counter for number of pages
+
+    with pdfplumber.open(filename) as pdf:  # open PDF
+        for page in pdf.pages:
+            allpages = pdf.pages[i].extract_table(table_settings)  # extract table from all pages
+            # test area to write pdfplumber debug info to a png file.
+            p0 = pdf.pages[0]
+            im = p0.to_image()
+            im.reset().debug_tablefinder(table_settings)
+            im.save("/Users/Sietse/Downloads/test.png", format="PNG", quantize=True, colors=256, bits=8)
+
+            for row in allpages[24:]:
+                if not row[0] == '':
+                    del row[1:3]
+                    del row[1]
+                rows.append(row)
+                continue
+        i += 1  # increase counter for number of pages
+        print(rows)
+    filecreation()
 
 
 # ------------- convert data into the required output for Openbank --------
@@ -264,8 +301,8 @@ def visa():
     cardinit2 = str(configs.get("VISA_CARD2_INIT").data + " - ")
     intermediate = []
     metadate = []
-    i = 0   # counter for number of pages
-    j = 0   # counter for first rows to add to pagemetadate
+    i = 0  # counter for number of pages
+    j = 0  # counter for first rows to add to pagemetadate
     k = 0
 
     months = {'jan': 1, 'feb': 2, 'mrt': 3, 'apr': 4, 'mei': 5, 'jun': 6, 'jul': 7, 'aug': 8, 'sep': 9, 'okt': 10,
@@ -286,7 +323,7 @@ def visa():
 
         checklist = ('Wisselkoers', 'Uw ', 'Het totale', 'machtigingsnummer', 'Bestedingslimiet', '€', 'Dit',
                      'Datum', 'transactie', 'Vorig', checkdate, 'International', 'Postbus', '1100 DS', 'worden', 'E',
-                     'Telefoon', 'Kvk')
+                     'Telefoon', 'Kvk', 'Nu beschikbaar')
 
         for page in pdf.pages:
             pageprint = pdf.pages[i].extract_text()  # extract text from all pages
@@ -298,7 +335,7 @@ def visa():
         try:
             intermediate.index(card1)  # determine if card1 is present
         except ValueError:
-            card1status = 0     # variable that card is not present
+            card1status = 0  # variable that card is not present
             try:
                 intermediate.index(card2)  # determine of card2 is present
             except ValueError:
@@ -312,12 +349,12 @@ def visa():
             try:
                 intermediate.index(card2)  # determine of card2 is present
             except ValueError:
-                card2status = 0     # card2 is not present
+                card2status = 0  # card2 is not present
             else:
-                card2status = 1     # card 2 is present
-                pos2 = intermediate.index(card2)       # index of card2 position
+                card2status = 1  # card 2 is present
+                pos2 = intermediate.index(card2)  # index of card2 position
 
-        if (card1status + card2status) == 2:        # both cards are present
+        if (card1status + card2status) == 2:  # both cards are present
             if pos1 < pos2:
                 initial1 = cardinit1
                 initial2 = cardinit2
@@ -340,15 +377,15 @@ def visa():
         length = len(rowsplit)  # define length for each row
 
         if 'januari' in visa_file and rowsplit[1] == 'dec':  # this corrects the year in December when the statement
-                                                                                                # arrives in January
+            # arrives in January
             newdate = str(rowsplit[0] + "-" + str(months.get(rowsplit[1])).zfill(2) + "-" + str(int(year) - 1))
         else:
             newdate = str(rowsplit[0] + "-" + str(months.get(rowsplit[1])).zfill(2) + "-" + year)  # lookup month and
-                                                                                                # convert to date
-        rowsplit.insert(0, newdate)     # insert correct date into file
+            # convert to date
+        rowsplit.insert(0, newdate)  # insert correct date into file
 
-        amount = rowsplit[length-1].replace(".", "")   # remove .
-        amount = amount.replace(",", ".")       # convert amount with comma to decimal point
+        amount = rowsplit[length - 1].replace(".", "")  # remove .
+        amount = amount.replace(",", ".")  # convert amount with comma to decimal point
         if rowsplit[-1] == "Af":  # check if it should be in the column withdrawal or deposit
             rowsplit.insert(0, amount)  # insert amount in withdrawal column
             rowsplit.insert(1, "")
@@ -357,11 +394,11 @@ def visa():
             rowsplit.insert(1, amount)  # insert amount in deposit column
         rowsplit.insert(2, "")
 
-        if (card1status + card2status) == 0:            # empty statement
+        if (card1status + card2status) == 0:  # empty statement
             description = " ".join(rowsplit[8:length + 2])
-        elif (card1status + card2status) == 1:        # one of both cards is present
+        elif (card1status + card2status) == 1:  # one of both cards is present
             description = initial1 + " ".join(rowsplit[8:length + 2])
-        else:           # both cards are present
+        else:  # both cards are present
             if pos1 < (pos2 - 1):
                 if k < (pos2 - pos1):
                     k += 1
@@ -375,7 +412,7 @@ def visa():
                 else:
                     description = initial2 + " ".join(rowsplit[8:length + 2])
         rowsplit.insert(2, description)
-        del rowsplit[5:]                    # delete all remaining fields
+        del rowsplit[5:]  # delete all remaining fields
         rows.append(rowsplit)
     filecreation()
 
@@ -426,5 +463,5 @@ def filecreation():
 
 # ------------ start menu ---------------------------
 print("")
-print("NL-Bankstatement-converter for GnuCash - written by JensTec (version 1.31)")
+print("NL-Bankstatement-converter for GnuCash - written by JensTec (version 1.4)")
 menu()

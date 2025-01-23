@@ -23,7 +23,7 @@ with open('SC_user_data.properties', 'rb') as config_file:  # load the propertie
     configs.load(config_file)
 
 path = configs.get("FILE_PATH").data  # path where the csv files are saved
-archivepath = str(path + "/Archive")  # creates name and directory for archiving files
+archivepath = str(path + "/archive")  # creates name and directory for archiving files
 bunq_acc = [  # creating list with unique identifiers to distinguish between bunq accounts
     configs.get("BUNQ_ACCOUNT1").data,
     configs.get("BUNQ_ACCOUNT2").data,

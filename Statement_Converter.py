@@ -305,8 +305,8 @@ def visa():
     j = 0  # counter for first rows to add to pagemetadate
     k = 0
 
-    months = {'jan': 1, 'feb': 2, 'mrt': 3, 'apr': 4, 'mei': 5, 'jun': 6, 'jul': 7, 'aug': 8, 'sep': 9, 'okt': 10,
-              'nov': 11, 'dec': 12}
+    months = {'jan.': 1, 'feb.': 2, 'mrt.': 3, 'apr.': 4, 'mei': 5, 'jun.': 6, 'jul.': 7, 'aug.': 8, 'sep.': 9, 'okt.': 10,
+              'nov.': 11, 'dec.': 12}
 
     with pdfplumber.open(filename) as pdf:  # open PDF
         pagemetadate = pdf.pages[0].extract_text()  # extract first page to extract meta data
@@ -323,7 +323,7 @@ def visa():
 
         checklist = ('Wisselkoers', 'Uw ', 'Het totale', 'machtigingsnummer', 'Bestedingslimiet', '€', 'Dit',
                      'Datum', 'transactie', 'Vorig', checkdate, 'International', 'Postbus', '1100 DS', 'worden', 'E',
-                     'Telefoon', 'Kvk', 'Nu beschikbaar')
+                     'Telefoon', 'Kvk', 'Nu beschikbaar', 'Voeg', card1, card2)
 
         for page in pdf.pages:
             pageprint = pdf.pages[i].extract_text()  # extract text from all pages
@@ -376,7 +376,7 @@ def visa():
         rowsplit = row.split(" ")  # split row into separate columns
         length = len(rowsplit)  # define length for each row
 
-        if 'januari' in visa_file and rowsplit[1] == 'dec':  # this corrects the year in December when the statement
+        if 'januari' in visa_file and rowsplit[1] == 'dec.':  # this corrects the year in December when the statement
             # arrives in January
             newdate = str(rowsplit[0] + "-" + str(months.get(rowsplit[1])).zfill(2) + "-" + str(int(year) - 1))
         else:
@@ -463,5 +463,5 @@ def filecreation():
 
 # ------------ start menu ---------------------------
 print("")
-print("NL-Bankstatement-converter for GnuCash - written by JensTec (version 1.4)")
+print("NL-Bankstatement-converter for GnuCash - written by JensTec (version 1.5)")
 menu()

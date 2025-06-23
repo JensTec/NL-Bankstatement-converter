@@ -27,7 +27,8 @@ archivepath = str(path + "/archive")  # creates name and directory for archiving
 bunq_acc = [  # creating list with unique identifiers to distinguish between bunq accounts
     configs.get("BUNQ_ACCOUNT1").data,
     configs.get("BUNQ_ACCOUNT2").data,
-    configs.get("BUNQ_ACCOUNT3").data
+    configs.get("BUNQ_ACCOUNT3").data,
+    configs.get("BUNQ_ACCOUNT4").data
 ]
 
 
@@ -64,7 +65,7 @@ def menu():
     else:
         filename = str(path + "/" + files[file_input])  # creating the variable which will be used in reading the file
 
-    if 'overzicht' in filename:
+    if 'document' or 'overzicht' in filename:
         visa()
     elif 'Rekeningtransacties' in filename:
         ob()
@@ -82,7 +83,7 @@ def menu():
                 for row in csvreader:  # extracting each data row one by one
                     rows.append(row)
                 asn()
-            elif bunq_acc[0] or bunq_acc[1] or bunq_acc[2] in filename:  #
+            elif bunq_acc[0] or bunq_acc[1] or bunq_acc[2] or bunq_acc[3] in filename:  #
                 fields = next(csvreader)  # extracting field names through first row
                 for row in csvreader:  # extracting each data row one by one
                     rows.append(row)
@@ -209,9 +210,11 @@ def bunq():
     if bunq_acc[0] in rows[0][3]:
         bank = "Bunq Joint Account"  # you can insert any name here
     elif bunq_acc[1] in rows[0][3]:
-        bank = "Bunq ES Deduction Account"  # you can insert any name here
+        bank = "Bunq ES Deduction Account"
     elif bunq_acc[2] in rows[0][3]:
-        bank = "Bunq Savings Account"  # you can insert any name here
+        bank = "Bunq Savings Account"
+    elif bunq_acc[3] in rows[0][3]:
+        bank = "Bunq Bizum Account"
     else:
         bank = "Bunq unknown"
 

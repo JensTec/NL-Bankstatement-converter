@@ -22,14 +22,14 @@ configs = Properties()  # instantiate the Properties object
 with open('SC_user_data.properties', 'rb') as config_file:  # load the properties file into the Properties object
     configs.load(config_file)
 
-path = configs.get("FILE_PATH").data  # path where the csv files are saved
+path = configs.get("FILE_PATH").data  # path where the csv and pdf files are saved
 archivepath = str(path + "/archive")  # creates name and directory for archiving files
 bunq_acc = [  # creating list with unique identifiers to distinguish between bunq accounts
     configs.get("BUNQ_ACCOUNT1").data,
     configs.get("BUNQ_ACCOUNT2").data,
     configs.get("BUNQ_ACCOUNT3").data,
     configs.get("BUNQ_ACCOUNT4").data
-]
+    ]
 
 
 # ------------ menu function ---------------------------
@@ -65,7 +65,7 @@ def menu():
     else:
         filename = str(path + "/" + files[file_input])  # creating the variable which will be used in reading the file
 
-    if 'document' or 'overzicht' in filename:
+    if 'document' in filename:
         visa()
     elif 'Rekeningtransacties' in filename:
         ob()

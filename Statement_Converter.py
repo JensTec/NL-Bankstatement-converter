@@ -65,7 +65,7 @@ def menu():
     else:
         filename = str(path + "/" + files[file_input])  # creating the variable which will be used in reading the file
 
-    if 'document' in filename:
+    if 'document' in filename: # before May 2025 ICS ANWB used the word 'Overzicht' but this changed in a recent update.
         visa()
     elif 'Rekeningtransacties' in filename:
         ob()
@@ -466,5 +466,5 @@ def filecreation():
 
 # ------------ start menu ---------------------------
 print("")
-print("NL-Bankstatement-converter for GnuCash - written by JensTec (version 1.5)")
+print("NL-Bankstatement-converter for GnuCash - written by JensTec")
 menu()

@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.9
+#!/usr/local/bin/python3.11.9
 
 # ------------ import functions ---------------------------------
 import csv
@@ -8,6 +8,7 @@ from tabulate import tabulate
 import pdfplumber
 from jproperties import Properties
 import shutil
+# import re
 
 # ------------ define global variables ---------------------------
 fields = []  # create list with original headers
@@ -16,6 +17,7 @@ csvfile = ""
 filename = ""
 bank = ""
 visa_file = ""
+year_month = str(datetime.now().year) + "-" + str(datetime.now().month)
 
 # reading the properties from the properties file
 configs = Properties()  # instantiate the Properties object
@@ -65,7 +67,7 @@ def menu():
     else:
         filename = str(path + "/" + files[file_input])  # creating the variable which will be used in reading the file
 
-    if 'document' in filename: # before May 2025 ICS ANWB used the word 'Overzicht' but this changed in a recent update.
+    if year_month in filename: # before November 2025 ICS ANWB used the word 'Overzicht' and 'download' but this changed in a recent update.
         visa()
     elif 'Rekeningtransacties' in filename:
         ob()

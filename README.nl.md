@@ -4,15 +4,22 @@
 
 # NL-Bankstatement-converter
 
-NL-Bankstatement-converter is een kleine applicatie om `csv` en `pdf` bestanden van vijf Nederlandse banken en één creditcardaanbieder om te zetten naar een `csv` bestandsformaat dat eenvoudig geïmporteerd kan worden in [GnuCash](https://github.com/Gnucash/gnucash).
+NL-Bankstatement-converter is een kleine applicatie om `csv`, `xlsx` en `pdf` bestanden van vijf Nederlandse banken, één Spaanse bank en één creditcardaanbieder om te zetten naar een `csv` bestandsformaat dat eenvoudig geïmporteerd kan worden in [GnuCash](https://github.com/Gnucash/gnucash).
 
-De zes banken/kaarten die momenteel worden ondersteund:
-* Rabobank - download de transacties in een `csv` bestand
-* ASN Bank - download de transacties in een `csv` bestand
-* ING Bank - download de transacties in een `csv` bestand
-* ANWB VISA ICS Creditcard - download een maandafschrift in `pdf`
-* Openbank / Santander - download transacties in een `pdf` bestand
-* Bunq Bank - download transacties in een `csv` bestand
+### De zeven banken/kaarten die momenteel worden ondersteund:
+
+Transactie data aangeleverd in `csv` formaat:
+* Rabobank
+* ASN Bank
+* ING Bank
+* Bunq Bank
+
+Transactie data aangeleverd in `pdf` formaat:
+* ANWB VISA ICS Credit Card
+* Openbank / Santander
+ 
+Transactie data aangeleverd in `xlsx` formaat:
+* BBVA Bank - Spanje
 
 ## Configuratie
 
@@ -22,7 +29,7 @@ Als u wilt dat de invoerbestanden automatisch worden verwijderd nadat het conver
 
 ## Gebruik
 
-Download de transacties van uw bank (ING, ASN, Openbank, Bunq en RaboBank) of maandafschrift (ANWB VISA Card) naar de map die u in het `properties` bestand heeft gedefiniëerd.
+Download de transacties van uw bank (ING, ASN, Openbank, Bunq, BBVA en RaboBank) of maandafschrift (ANWB VISA Card) naar de map die u in het `properties` bestand heeft gedefiniëerd.
 Start de applicatie en selecteer het bestand dat u wilt converteren. Er wordt een samenvatting op het scherm gegeven en tegelijkertijd wordt het csv-uitvoerbestand naar dezelfde map geschreven.
 
 Importeer uw transacties in GnuCash door transacties in de `csv` indeling te importeren.

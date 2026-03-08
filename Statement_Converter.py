@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.11.9
+#!/usr/local/bin/python3.11.14
 
 # ------------ import functions ---------------------------------
 import csv
@@ -8,7 +8,8 @@ from tabulate import tabulate
 import pdfplumber
 from jproperties import Properties
 import shutil
-# import re
+from colorama import Fore
+from openpyxl import load_workbook
 
 # ------------ define global variables ---------------------------
 fields = []  # create list with original headers
@@ -19,18 +20,20 @@ bank = ""
 visa_file = ""
 year_month = str(datetime.now().year) + "-" + str(datetime.now().month)
 
-# reading the properties from the properties file
-configs = Properties()  # instantiate the Properties object
+# read properties from properties file
+configs = Properties()                                  # instantiate the Properties object
 with open('SC_user_data.properties', 'rb') as config_file:  # load the properties file into the Properties object
     configs.load(config_file)
 
-path = configs.get("FILE_PATH").data  # path where the csv and pdf files are saved
-archivepath = str(path + "/archive")  # creates name and directory for archiving files
-bunq_acc = [  # creating list with unique identifiers to distinguish between bunq accounts
+visa_account_nr = configs.get("VISA_ACCOUNT_NR").data   # visa account number to identify filename
+path = configs.get("FILE_PATH").data                    # path where the csv and pdf files are saved
+archivepath = str(path + "/archive")                    # create name and directory for archiving files
+bunq_acc = [                                # create list with unique identifiers to distinguish between bunq accounts
     configs.get("BUNQ_ACCOUNT1").data,
     configs.get("BUNQ_ACCOUNT2").data,
     configs.get("BUNQ_ACCOUNT3").data,
-    configs.get("BUNQ_ACCOUNT4").data
+    configs.get("BUNQ_ACCOUNT4").data,
+    configs.get("BUNQ_ACCOUNT5").data
     ]
 
 
@@ -42,57 +45,59 @@ def menu():
     global csvfile
     global filename
     global bunq_acc
-    files = []  # create list with all the csv file names
+    files = []                              # create list with all the csv file names
     filenumber = 1
 
-    print("")
-    print("Available .csv & .pdf files in %s: " % path)
+    print(Fore.BLUE + "***********************************************************************************************")
+    print("**  " + Fore.YELLOW + "Available .csv, .xlsx & .pdf files in %s: " % path)
+    print(Fore.BLUE + "***********************************************************************************************")
     for x in os.listdir(path):  # show available csv and pdf files in path, and ability to select the correct one
-        if x.endswith(".csv") or x.endswith(".pdf"):
+        if x.endswith(".csv") or x.endswith(".pdf") or x.endswith(".xlsx"):
             files.append(x)
     files.sort()
 
     for f in files:
-        print(str(filenumber) + " - " + files[filenumber - 1])
+        print(Fore.BLUE + "**  " + Fore.YELLOW + str(filenumber) +") " + Fore.RESET + files[filenumber - 1])
         filenumber += 1
-    exit_number = filenumber
-    print(str(exit_number) + " - Exit")
-    print('\n')
+    print(Fore.BLUE + "***********************************************************************************************")
+    print(Fore.GREEN + "Select a file to convert or")
+    file_input = input(Fore.RED + "Q " + Fore.RESET + "to quit: ")
 
-    file_input = int(input("Choose the file to convert : ")) - 1
-
-    if (file_input + 1) == exit_number:  # create option to exit the software gracefully
+    if file_input == ("q" or "Q"):                                     # create option to exit the software
         print("")
         raise SystemExit
     else:
-        filename = str(path + "/" + files[file_input])  # creating the variable which will be used in reading the file
+        filename = str(path + "/" + files[int(file_input) -1])  # create variable which will be used in read file
 
-    if year_month in filename: # before November 2025 ICS ANWB used the word 'Overzicht' and 'download' but this changed in a recent update.
+    if visa_account_nr in filename: # use account number which is in standard filename
         visa()
+    elif 'Latest transactions' in filename:
+        bbva()
     elif 'Rekeningtransacties' in filename:
         ob()
     elif 'Brubank' in filename:
         brubank()
-    else:  # reading csv selected file
-        with open(filename, 'r', errors='ignore') as csvfile:  # errors='ignore' due to some characters in Rabobank
-            csvreader = csv.reader(csvfile)  # creating a csv reader object
-            if 'RABO' in filename:
-                fields = next(csvreader)  # extracting field names through first row
-                for row in csvreader:  # extracting each data row one by one
-                    rows.append(row)
-                rabo()
-            elif 'ASN' in filename:
-                for row in csvreader:  # extracting each data row one by one
+    else:                                                       # read csv selected file
+        with open(filename, 'r', errors='ignore') as csvfile:   # errors='ignore' due to some characters in Rabobank
+            csvreader = csv.reader(csvfile)                     # create a csv reader object
+
+            if 'ASN' in filename:
+                for row in csvreader:   # extract each data row one by one
                     rows.append(row)
                 asn()
-            elif bunq_acc[0] or bunq_acc[1] or bunq_acc[2] or bunq_acc[3] in filename:  #
-                fields = next(csvreader)  # extracting field names through first row
-                for row in csvreader:  # extracting each data row one by one
+            elif 'RABO' in filename:
+                next(csvreader, None)   # Returns None if the file is empty
+                for row in csvreader:
+                    rows.append(row)
+                rabo()
+            elif any(sub in filename for sub in bunq_acc):
+                next(csvreader, None)
+                for row in csvreader:
                     rows.append(row)
                 bunq()
             elif 'INGB' in filename:
-                fields = next(csvreader)  # extracting field names through first row
-                for row in csvreader:  # extracting each data row one by one
+                next(csvreader, None)
+                for row in csvreader:
                     rows.append(row)
                 ing()
             else:
@@ -210,13 +215,15 @@ def bunq():
     global bunq_acc
 
     if bunq_acc[0] in rows[0][3]:
-        bank = "Bunq Joint Account"  # you can insert any name here
+        bank = "Bunq Joint"                                                 # you can insert any name here
     elif bunq_acc[1] in rows[0][3]:
-        bank = "Bunq ES Deduction Account"
+        bank = "Bunq ES"
     elif bunq_acc[2] in rows[0][3]:
-        bank = "Bunq Savings Account"
+        bank = "Bunq Savings"
     elif bunq_acc[3] in rows[0][3]:
-        bank = "Bunq Bizum Account"
+        bank = "Bunq Bizum"
+    elif bunq_acc[4] in rows[0][3]:
+        bank = "Bunq Supermarket"
     else:
         bank = "Bunq unknown"
 
@@ -299,6 +306,7 @@ def visa():
     global rows
     global filename
     global visa_file
+    global visa_account_nr
     bank = "ANWB Visa Card"
     card1 = configs.get("VISA_CARD1").data
     card2 = configs.get("VISA_CARD2").data
@@ -421,6 +429,35 @@ def visa():
         rows.append(rowsplit)
     filecreation()
 
+# ------------- convert data into the required output for BBVA xlsx transactions --------
+def bbva():
+    global rows
+    global bank
+    global filename
+    bank = "BBVA"                                                   # set variable to BBVA
+
+    wb = load_workbook(filename)                                    # Read xlsx file
+
+    for row in wb.active.iter_rows(min_row=6, values_only=True):    # Iterate over the remaining rows
+        rows.append(list(row))
+
+    wb.close()                                  # Close the workbook
+
+    for row in rows:
+        amount = float(row[5])
+        if amount < 0:                          # check if it should be in the column withdrawal or deposit
+            row.insert(0, -1 * amount)          # multiply by -1 to have the amount with 'minus' sign
+            row.insert(1, "")
+        else:
+            row.insert(0, "")
+            row.insert(1, amount)
+        row.insert(2, str(row[5] + " - " + row[6] + " - " + row[11]))      # insert description
+        row.insert(3, "")
+        del row[4:6]                                    # delete column not needed
+        del row[5:13]                                   # delete columns not needed
+
+    filecreation()
+
 
 # --------------- create unique name, write the file and show results --------------------
 def filecreation():
@@ -439,34 +476,39 @@ def filecreation():
     fields_output = ["Withdrawal", "Deposit", "Description", "Number", "Date"]
 
     with open(filename_write, 'w') as csvfile:
-        csvwriter = csv.writer(csvfile)  # creating a csv writer object
-        csvwriter.writerow(fields_output)  # writing the fields
-        csvwriter.writerows(rows)  # writing the data rows
+        csvwriter = csv.writer(csvfile)                 # create csv writer object
+        csvwriter.writerow(fields_output)               # write fields
+        csvwriter.writerows(rows)                       # write data rows
 
-    print("You have converted the file: '" + filename[len(path) + 1:] + "' from %s." % bank)
     print('\n')
-    print(tabulate(rows, headers=fields_output))  # printing the table on screen with the data
+    print(Fore.BLUE + "***********************************************************************************************")
+    print("**  " + Fore.YELLOW + "Converted the file: '" + Fore.RESET + filename[len(path) + 1:] + Fore.YELLOW + "' from %s." % bank + Fore.RESET)
+    print('\n')
+    print(tabulate(rows, headers=fields_output))        # print table on screen with data
+    print()
+    print(Fore.BLUE + "***********************************************************************************************")
 
     if auto_delete == "YES":
         os.remove(filename)
-        print("")
+        print(Fore.GREEN + "")
         print("File %s has been removed successfully." % filename)
-    else:  # if auto_delete is set to "NO", the input file will be archived in a separate folder
-        if not os.path.exists(archivepath):  # check if the archivepath folder already exists
+    else:                       # if auto_delete is set to "NO", the input file will be archived in a separate folder
+        if not os.path.exists(archivepath):             # check if the archivepath folder already exists
             os.mkdir(archivepath)
             print('\n')
-            print("Folder '%s' has been created." % archivepath)
-        shutil.move(filename, archivepath)  # move inputfile to 'archivepath'
-        print("The input file has been moved to %s." % archivepath)
-    print("----------------------------------------------------------------------")
+            print(Fore.GREEN + "Folder '%s' has been created." % archivepath)
+        shutil.move(filename, archivepath)              # move inputfile to 'archivepath'
+        print(Fore.GREEN + "The input file has been moved to %s." % archivepath + Fore.RESET)
+        print()
 
     # reset values and return to menu()
-    rows = []  # reset rows list
-    visa_file = ""  # reset visa file addition
+    rows = []                                           # reset rows list
+    visa_file = ""                                      # reset visa file addition
     menu()
 
 
 # ------------ start menu ---------------------------
 print("")
 print("NL-Bankstatement-converter for GnuCash - written by JensTec")
+print("(c) 2026 JensTec")
 menu()

@@ -336,7 +336,7 @@ def visa():
 
         checklist = ('Wisselkoers', 'Uw ', 'Het totale', 'machtigingsnummer', 'Bestedingslimiet', '€', 'Dit',
                      'Datum', 'transactie', 'Vorig', checkdate, 'International', 'Postbus', '1100 DS', 'worden', 'E',
-                     'Telefoon', 'Kvk', 'Nu beschikbaar', 'Voeg', card1, card2)
+                     'Telefoon', 'Kvk', 'Nu beschikbaar', 'Voeg', 'Vermeld', 'Het minimaal ', card1, card2)
 
         for page in pdf.pages:
             pageprint = pdf.pages[i].extract_text()  # extract text from all pages
